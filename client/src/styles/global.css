@@ -1,0 +1,483 @@
+@import "tailwindcss";
+
+/*
+  Beacon design system — clean & modern.
+  Citizen app: light, calm, colour only on data and the emergency action.
+  Command console: restrained dark, scoped via .cmd.
+*/
+
+@theme {
+  /* citizen (light) */
+  --color-bg: #f7f8fa;
+  --color-surface: #ffffff;
+  --color-surface2: #f2f4f7;
+  --color-line: #e6e8ec;
+  --color-line2: #d5d9e0;
+  --color-ink: #101828;
+  --color-ink2: #475467;
+  --color-ink3: #98a2b3;
+
+  --color-red: #dc2626;
+  --color-redbg: #fef2f2;
+  --color-redline: #fecaca;
+  --color-amber: #d97706;
+  --color-amberbg: #fffbeb;
+  --color-amberline: #fde68a;
+  --color-green: #059669;
+  --color-greenbg: #ecfdf5;
+  --color-greenline: #a7f3d0;
+  --color-blue: #2563eb;
+  --color-bluebg: #eff6ff;
+  --color-blueline: #bfdbfe;
+
+  /* command (dark) — scoped under .cmd */
+  --color-dbg: #0c0d10;
+  --color-dpanel: #14161a;
+  --color-dpanel2: #1a1d23;
+  --color-dline: #232730;
+  --color-dline2: #30353f;
+  --color-dink: #f4f5f7;
+  --color-dink2: #9aa1ad;
+  --color-dink3: #626b7a;
+  --color-dred: #ef4444;
+  --color-dredbg: #2a1517;
+  --color-damber: #f59e0b;
+  --color-dgreen: #34d399;
+  --color-dgreenbg: #12241d;
+  --color-dblue: #60a5fa;
+  --color-dbluebg: #152238;
+
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace;
+}
+
+/* ---------- base ---------- */
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  overscroll-behavior-y: none;
+  font-feature-settings: "cv11", "ss01";
+}
+
+::selection {
+  background: rgba(37, 99, 235, 0.18);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-blue);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+*::-webkit-scrollbar-thumb {
+  background: var(--color-line2);
+  border-radius: 4px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+input,
+textarea,
+select,
+button {
+  font: inherit;
+  color: inherit;
+}
+textarea,
+input {
+  outline: none;
+}
+
+.num {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- citizen primitives ---------- */
+
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: 16px;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  border-radius: 12px;
+  padding: 11px 18px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  user-select: none;
+  transition: transform 160ms cubic-bezier(0.23, 1, 0.32, 1), background 140ms ease-out,
+    box-shadow 140ms ease-out, opacity 140ms ease-out;
+}
+.btn:active {
+  transform: scale(0.97);
+}
+.btn:disabled {
+  opacity: 0.45;
+  pointer-events: none;
+}
+.btn-primary {
+  background: var(--color-ink);
+  color: #fff;
+}
+@media (hover: hover) and (pointer: fine) {
+  .btn-primary:hover {
+    background: #2a3441;
+  }
+}
+.btn-danger {
+  background: var(--color-red);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(220, 38, 38, 0.35);
+}
+@media (hover: hover) and (pointer: fine) {
+  .btn-danger:hover {
+    background: #c81e1e;
+  }
+}
+.btn-secondary {
+  background: var(--color-surface);
+  color: var(--color-ink);
+  border-color: var(--color-line2);
+}
+@media (hover: hover) and (pointer: fine) {
+  .btn-secondary:hover {
+    background: var(--color-surface2);
+  }
+}
+.btn-ghost-danger {
+  background: var(--color-redbg);
+  color: var(--color-red);
+  border-color: var(--color-redline);
+}
+.btn-sm {
+  padding: 7px 13px;
+  font-size: 13px;
+  border-radius: 10px;
+}
+
+.input {
+  width: 100%;
+  background: var(--color-surface);
+  border: 1px solid var(--color-line2);
+  border-radius: 12px;
+  padding: 11px 13px;
+  font-size: 14.5px;
+  color: var(--color-ink);
+  transition: border-color 140ms ease-out, box-shadow 140ms ease-out;
+}
+.input::placeholder {
+  color: var(--color-ink3);
+}
+.input:focus {
+  border-color: var(--color-blue);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 5px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--color-line);
+  background: var(--color-surface);
+  color: var(--color-ink2);
+  white-space: nowrap;
+  flex: none;
+}
+
+.tag-opt {
+  font-size: 13px;
+  font-weight: 500;
+  padding: 8px 13px;
+  border-radius: 999px;
+  border: 1px solid var(--color-line2);
+  color: var(--color-ink2);
+  cursor: pointer;
+  background: var(--color-surface);
+  transition: all 140ms ease-out;
+}
+.tag-opt[data-on="true"] {
+  background: var(--color-ink);
+  color: #fff;
+  border-color: var(--color-ink);
+}
+
+.dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex: none;
+}
+.dot-ok {
+  background: var(--color-green);
+}
+.dot-warn {
+  background: var(--color-amber);
+}
+.dot-bad {
+  background: var(--color-ink3);
+}
+.dot-live {
+  background: var(--color-dgreen);
+  animation: blip 2s ease infinite;
+}
+@keyframes blip {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+
+/* ---------- SOS hold button ---------- */
+
+.sos-hold {
+  position: relative;
+  overflow: hidden;
+  touch-action: none;
+  box-shadow: 0 6px 20px rgba(220, 38, 38, 0.35);
+}
+.sos-hold:active {
+  transform: scale(0.98);
+}
+.sos-fill {
+  position: absolute;
+  inset: 0;
+  transform-origin: left;
+  background: rgba(255, 255, 255, 0.28);
+}
+
+/* ---------- dispatch ticker ---------- */
+
+.ticker-track {
+  display: inline-flex;
+  animation: ticker-scroll 45s linear infinite;
+}
+.ticker:hover .ticker-track {
+  animation-play-state: paused;
+}
+@keyframes ticker-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* ---------- skeleton ---------- */
+
+.skel {
+  background: linear-gradient(90deg, var(--color-dpanel2) 25%, #20242c 37%, var(--color-dpanel2) 63%);
+  background-size: 400% 100%;
+  animation: skel 1.2s ease infinite;
+  border-radius: 6px;
+}
+@keyframes skel {
+  0% { background-position: 100% 50%; }
+  100% { background-position: 0 50%; }
+}
+
+/* ---------- map ---------- */
+
+.map-light .leaflet-container,
+.map-dark .leaflet-container {
+  font-family: var(--font-sans);
+  outline: none;
+}
+.map-light .leaflet-container {
+  background: #eef0f3;
+}
+.map-dark .leaflet-container {
+  background: var(--color-dbg);
+}
+
+.leaflet-control-attribution {
+  font-size: 9px !important;
+}
+.map-light .leaflet-control-attribution {
+  background: rgba(255, 255, 255, 0.85) !important;
+  color: var(--color-ink3) !important;
+}
+.map-dark .leaflet-control-attribution {
+  background: rgba(12, 13, 16, 0.75) !important;
+  color: var(--color-dink3) !important;
+}
+
+.leaflet-bar {
+  box-shadow: none !important;
+  border: 1px solid var(--color-line) !important;
+  border-radius: 10px;
+  overflow: hidden;
+}
+.map-light .leaflet-bar a {
+  background: #fff !important;
+  color: var(--color-ink) !important;
+  border-bottom: 1px solid var(--color-line) !important;
+}
+.map-dark .leaflet-bar {
+  border-color: var(--color-dline) !important;
+}
+.map-dark .leaflet-bar a {
+  background: var(--color-dpanel) !important;
+  color: var(--color-dink) !important;
+  border-bottom-color: var(--color-dline) !important;
+}
+
+.leaflet-popup-content-wrapper {
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(16, 24, 40, 0.16);
+  font-size: 13px;
+  line-height: 1.5;
+}
+.map-light .leaflet-popup-content-wrapper {
+  background: #fff;
+  color: var(--color-ink);
+  border: 1px solid var(--color-line);
+}
+.map-light .leaflet-popup-tip {
+  display: none;
+}
+.map-dark .leaflet-popup-content-wrapper,
+.map-dark .leaflet-popup-tip {
+  background: var(--color-dpanel2);
+  color: var(--color-dink);
+  border: 1px solid var(--color-dline);
+}
+.leaflet-popup-content {
+  margin: 10px 13px;
+}
+
+/* markers */
+.mk {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  border: 2.5px solid #fff;
+  box-shadow: 0 1px 4px rgba(16, 24, 40, 0.35);
+}
+.mk-critical {
+  position: relative;
+}
+.mk-critical::after {
+  content: "";
+  position: absolute;
+  inset: -7px;
+  border-radius: 50%;
+  border: 2px solid rgba(220, 38, 38, 0.55);
+  animation: mkpulse 1.7s ease-out infinite;
+}
+@keyframes mkpulse {
+  0% { transform: scale(0.5); opacity: 1; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+.mk-help {
+  border-radius: 4px;
+  transform: rotate(45deg);
+  border-width: 2px;
+}
+.mk-shelter {
+  width: 15px;
+  height: 15px;
+  border-radius: 5px;
+  background: var(--color-green);
+  border: 2px solid #fff;
+  box-shadow: 0 1px 4px rgba(16, 24, 40, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+}
+.mk-me {
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  background: var(--color-blue);
+  border: 3px solid #fff;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.4), 0 1px 5px rgba(16, 24, 40, 0.3);
+}
+
+.cl-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #fff;
+  background: rgba(220, 38, 38, 0.92);
+  border-radius: 999px;
+  padding: 2px 8px;
+  text-align: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.pick-mode .leaflet-container {
+  cursor: crosshair;
+}
+
+/* dark scoping for popups inside command */
+.cmd .leaflet-popup-content-wrapper,
+.cmd .leaflet-popup-tip {
+  background: var(--color-dpanel2);
+  color: var(--color-dink);
+  border: 1px solid var(--color-dline);
+}
+
+/* ---------- command primitives ---------- */
+
+.cmd {
+  background: var(--color-dbg);
+  color: var(--color-dink);
+  /* native form controls (select dropdowns, scrollbars) must render dark,
+     otherwise option text renders light-on-light and disappears */
+  color-scheme: dark;
+}
+.cmd .btn-secondary {
+  background: var(--color-dpanel2);
+  color: var(--color-dink);
+  border-color: var(--color-dline2);
+}
+.cmd-input {
+  background: var(--color-dpanel2);
+  border: 1px solid var(--color-dline);
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 12.5px;
+  color: var(--color-dink);
+  color-scheme: dark;
+}
+select.cmd-input option {
+  background: var(--color-dpanel2);
+  color: var(--color-dink);
+}
+.cmd-input:focus {
+  outline: none;
+  border-color: var(--color-dink3);
+}
