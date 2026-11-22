@@ -5,7 +5,9 @@
   "description": "LifeLine — offline-first peer-to-peer mesh network for disaster response",
   "workspaces": [
     "server",
-    "client"
+    "client",
+    "packages/shared",
+    "packages/crypto"
   ],
   "scripts": {
     "dev": "concurrently -k -n server,client -c blue,magenta \"npm:dev -w server\" \"npm:dev -w client\"",
@@ -13,13 +15,36 @@
     "start": "npm run start -w server",
     "db:init": "npm run db:init -w server",
     "db:seed": "npm run seed -w server",
-    "typecheck": "npm run typecheck -w server && npm run typecheck -w client"
+    "typecheck": "npm run typecheck -w server && npm run typecheck -w client && npm run typecheck -w @beacon/shared",
+    "lint": "eslint . --ext .ts,.tsx",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "prepare": "husky install",
+    "lint-staged": "lint-staged"
   },
   "devDependencies": {
-    "concurrently": "^9.1.0"
+    "@eslint/js": "^9.17.0",
+    "@typescript-eslint/eslint-plugin": "^8.18.0",
+    "@typescript-eslint/parser": "^8.18.0",
+    "concurrently": "^9.1.0",
+    "eslint": "^9.17.0",
+    "eslint-config-prettier": "^10.0.0",
+    "globals": "^15.14.0",
+    "husky": "^9.1.0",
+    "lint-staged": "^15.0.0",
+    "prettier": "^3.3.3",
+    "zod": "^3.23.8"
   },
   "allowScripts": {
     "esbuild@0.28.2": true,
     "esbuild@0.21.5": true
+  },
+  "lint-staged": {
+    "**/*.{ts,tsx,js,jsx,json,md,yml,yaml}": [
+      "prettier --write"
+    ]
+  },
+  "dependencies": {
+    "lightningcss": "^1.33.0"
   }
 }

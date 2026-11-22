@@ -66,7 +66,9 @@ export default function Overview() {
   const [clusters, setClusters] = useState<ClusterInfo[]>([]);
   const [eps, setEps] = useState(150);
   const [selCluster, setSelCluster] = useState<number | null>(null);
-  const [view, setView] = useState<{ center: [number, number]; zoom?: number } | undefined>(undefined);
+  const [view, setView] = useState<{ center: [number, number]; zoom?: number } | undefined>(
+    undefined,
+  );
 
   const refresh = useCallback(async () => {
     try {
@@ -144,7 +146,10 @@ export default function Overview() {
     }
   }
 
-  const tickerItems = ticker.length > 0 ? ticker : [{ id: "idle", ts: Date.now(), color: "#626b7a", text: "Awaiting mesh traffic" }];
+  const tickerItems =
+    ticker.length > 0
+      ? ticker
+      : [{ id: "idle", ts: Date.now(), color: "#626b7a", text: "Awaiting mesh traffic" }];
   const doubled = [...tickerItems, ...tickerItems];
 
   return (
@@ -184,13 +189,36 @@ export default function Overview() {
       <div className="min-h-0 flex-1 overflow-y-auto px-6 py-4">
         {/* KPI strip — type, not tiles */}
         <div className="flex flex-wrap items-end gap-x-8 gap-y-3">
-          <Kpi label="Open emergencies" value={stats ? <Count value={stats.emergencies} /> : <Skel w={26} />} big color="#ef4444" />
-          <Kpi label="Critical" value={stats ? <Count value={stats.critical} /> : <Skel w={18} />} color="#ef4444" />
-          <Kpi label="Help requests" value={stats ? <Count value={stats.helpRequests} /> : <Skel w={18} />} color="#f59e0b" />
-          <Kpi label="Safe check-ins" value={stats ? <Count value={stats.safe} /> : <Skel w={18} />} color="#34d399" />
+          <Kpi
+            label="Open emergencies"
+            value={stats ? <Count value={stats.emergencies} /> : <Skel w={26} />}
+            big
+            color="#ef4444"
+          />
+          <Kpi
+            label="Critical"
+            value={stats ? <Count value={stats.critical} /> : <Skel w={18} />}
+            color="#ef4444"
+          />
+          <Kpi
+            label="Help requests"
+            value={stats ? <Count value={stats.helpRequests} /> : <Skel w={18} />}
+            color="#f59e0b"
+          />
+          <Kpi
+            label="Safe check-ins"
+            value={stats ? <Count value={stats.safe} /> : <Skel w={18} />}
+            color="#34d399"
+          />
           <Kpi label="Hazards" value={stats ? <Count value={stats.hazards} /> : <Skel w={18} />} />
-          <Kpi label="Shelters" value={stats ? <Count value={stats.shelters} /> : <Skel w={18} />} />
-          <Kpi label="Devices seen" value={stats ? <Count value={stats.devices} /> : <Skel w={18} />} />
+          <Kpi
+            label="Shelters"
+            value={stats ? <Count value={stats.shelters} /> : <Skel w={18} />}
+          />
+          <Kpi
+            label="Devices seen"
+            value={stats ? <Count value={stats.devices} /> : <Skel w={18} />}
+          />
           <Kpi
             label="Last mule sync"
             value={stats?.lastSync ? fmtTime(new Date(stats.lastSync).getTime()) : "—"}
@@ -208,7 +236,14 @@ export default function Overview() {
               </span>
             </div>
             <div className="h-[420px]">
-              <MapCanvas center={CENTRE} zoom={13} theme="dark" view={view} markers={markers} circles={circles} />
+              <MapCanvas
+                center={CENTRE}
+                zoom={13}
+                theme="dark"
+                view={view}
+                markers={markers}
+                circles={circles}
+              />
             </div>
           </div>
 
@@ -219,16 +254,24 @@ export default function Overview() {
             </div>
             <div className="max-h-[420px] divide-y divide-dline overflow-y-auto">
               {priority.length === 0 ? (
-                <div className="p-6 text-center text-[13px] text-dink2">No critical emergencies open.</div>
+                <div className="p-6 text-center text-[13px] text-dink2">
+                  No critical emergencies open.
+                </div>
               ) : (
                 priority.map((s) => (
                   <div key={s.id} className="px-4 py-3">
                     <div className="flex items-center gap-2">
                       <span className="dot" style={{ background: severityDark[s.severity] }} />
-                      <span className="text-[12px] font-medium uppercase text-dink">{s.severity}</span>
+                      <span className="text-[12px] font-medium uppercase text-dink">
+                        {s.severity}
+                      </span>
                       <span className="num ml-auto text-[11px] text-dink3">{fmtTime(s.ts)}</span>
                     </div>
-                    {s.note && <p className="mt-1.5 line-clamp-2 text-[12.5px] leading-relaxed text-dink2">{s.note}</p>}
+                    {s.note && (
+                      <p className="mt-1.5 line-clamp-2 text-[12.5px] leading-relaxed text-dink2">
+                        {s.note}
+                      </p>
+                    )}
                     <div className="mt-2 flex items-center gap-2">
                       <span className="num text-[11px] text-dink3">
                         {s.lat.toFixed(4)}, {s.lng.toFixed(4)}
@@ -256,7 +299,9 @@ export default function Overview() {
         <div className="mt-4 overflow-hidden rounded-xl border border-dline bg-dpanel">
           <div className="border-b border-dline px-4 py-2.5">
             <span className="text-[13px] font-medium text-dink">Sector density</span>
-            <span className="ml-3 text-[11.5px] text-dink3">DBSCAN clusters of open requests · click to fly</span>
+            <span className="ml-3 text-[11.5px] text-dink3">
+              DBSCAN clusters of open requests · click to fly
+            </span>
           </div>
           <div className="grid gap-px bg-dline sm:grid-cols-2 lg:grid-cols-4">
             {clusters.length === 0 ? (
@@ -264,7 +309,7 @@ export default function Overview() {
                 No clusters form at {eps}m right now.
               </div>
             ) : (
-              clusters.slice(0, 8).map((c, i) => {
+              clusters.slice(0, 8).map((c) => {
                 const total = SEV_KEYS.reduce((n, k) => n + (c.severities[k] ?? 0), 0) || 1;
                 return (
                   <button
@@ -280,14 +325,19 @@ export default function Overview() {
                     <div className="flex items-baseline gap-2">
                       <span className="num text-[20px] font-semibold text-dink">{c.size}</span>
                       <span className="text-[11.5px] text-dink3">people</span>
-                      <span className="num ml-auto text-[11px] text-dink3">r {Math.round(c.radius)}m</span>
+                      <span className="num ml-auto text-[11px] text-dink3">
+                        r {Math.round(c.radius)}m
+                      </span>
                     </div>
                     <div className="mt-2 flex h-[5px] w-full overflow-hidden rounded-full bg-dbg">
                       {SEV_KEYS.map((k) => {
                         const n = c.severities[k] ?? 0;
                         if (!n) return null;
                         return (
-                          <span key={k} style={{ width: `${(n / total) * 100}%`, background: severityDark[k] }} />
+                          <span
+                            key={k}
+                            style={{ width: `${(n / total) * 100}%`, background: severityDark[k] }}
+                          />
                         );
                       })}
                     </div>

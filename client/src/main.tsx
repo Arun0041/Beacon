@@ -9,9 +9,12 @@ import "./styles/global.css";
 import App from "./App";
 import { startNet } from "./lib/net";
 import { startSync } from "./lib/sync";
+import { ensureIdentity } from "./lib/identity";
 
-startNet();
-startSync();
+void ensureIdentity().finally(() => {
+  startNet();
+  startSync();
+});
 
 if ("serviceWorker" in navigator && import.meta.env.PROD) {
   window.addEventListener("load", () => {
