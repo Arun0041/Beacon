@@ -1,13 +1,156 @@
-node_modules/
-dist/
-.env
-*.log
-.DS_Store
-.tools/
 
-# agent tooling (installed skills, not project code)
-.agents/
-.claude/
-agent/
-.taste-skill/
-skills-lock.json
+# ==========================================
+# Dependencies
+# ==========================================
+
+node_modules/
+**/node_modules/
+
+# Package manager files (optional lockfiles)
+# Keep package-lock.json / yarn.lock / pnpm-lock.yaml committed
+
+
+# ==========================================
+# Environment Variables & Secrets
+# ==========================================
+
+.env
+.env.*
+!.env.example
+!.env.sample
+
+# ==========================================
+# Build Outputs & Compiled Files
+# ==========================================
+
+dist/
+build/
+out/
+coverage/
+.next/
+.vite/
+.turbo/
+.cache/
+
+# TypeScript compiled output
+*.tsbuildinfo
+
+# ==========================================
+# Logs
+# ==========================================
+
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# ==========================================
+# Frontend (React)
+# ==========================================
+
+# React build outputs
+frontend/build/
+frontend/dist/
+
+# Vite
+frontend/.vite/
+
+# Testing
+frontend/coverage/
+
+# Storybook
+storybook-static/
+
+# ==========================================
+# Backend (Node.js + Express + TypeScript)
+# ==========================================
+
+# Compiled backend output
+backend/dist/
+backend/build/
+
+# Temporary uploads
+backend/uploads/*
+!backend/uploads/.gitkeep
+
+# Temporary files
+tmp/
+temp/
+
+# ==========================================
+# Testing & Coverage
+# ==========================================
+
+coverage/
+.nyc_output/
+*.lcov
+
+# ==========================================
+# IDEs & Editors
+# ==========================================
+
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# ==========================================
+# Operating System Files
+# ==========================================
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+Desktop.ini
+$RECYCLE.BIN/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Linux
+*~
+
+# ==========================================
+# Debugging & Temporary Files
+# ==========================================
+
+*.swp
+*.swo
+*.bak
+*.tmp
+*.orig
+*.old
+
+# ==========================================
+# Miscellaneous
+# ==========================================
+
+.pnpm-store/
+.yarn/
+.eslintcache
+.stylelintcache
+.parcel-cache/
+.vercel/
+.netlify/
+
+# Local databases
+*.sqlite
+*.sqlite3
+*.db
+
+# Certificates and private keys
+*.pem
+*.key
+*.crt
+
+AGENT_PROMPT.md
+PROGRESS.md
+Requirement.md

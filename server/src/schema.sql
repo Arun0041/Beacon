@@ -1,3 +1,5 @@
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
 CREATE TABLE IF NOT EXISTS sos_reports (
   id            TEXT PRIMARY KEY,
   kind          TEXT NOT NULL DEFAULT 'emergency'
@@ -58,4 +60,16 @@ CREATE TABLE IF NOT EXISTS shelters (
   lng        DOUBLE PRECISION NOT NULL,
   contact    TEXT NOT NULL DEFAULT '',
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS responder_users (
+  id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  username      TEXT UNIQUE NOT NULL,
+  password_hash TEXT NOT NULL,
+  role          TEXT NOT NULL CHECK (role IN ('admin','dispatcher','viewer')),
+  disabled      BOOLEAN NOT NULL DEFAULT false,
+  failed_attempts INTEGER NOT NULL DEFAULT 0,
+  locked_until  TIMESTAMPTZ,
+  created_at    TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at    TIMESTAMPTZ NOT NULL DEFAULT now()
 );

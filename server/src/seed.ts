@@ -1,4 +1,5 @@
 import { pool } from "./db.js";
+import bcrypt from "bcryptjs";
 
 /** Seeded RNG so demo data is reproducible. */
 function mulberry32(seed: number) {
@@ -12,16 +13,16 @@ function mulberry32(seed: number) {
 }
 
 const rand = mulberry32(20261011);
-const pick = <T,>(arr: T[]) => arr[Math.floor(rand() * arr.length)];
+const pick = <T>(arr: T[]) => arr[Math.floor(rand() * arr.length)];
 const jitter = (base: number, spread: number) => base + (rand() - 0.5) * spread;
 
 /** Demo centre: LPU campus area, Phagwara, Punjab. */
 const CENTRE = { lat: 31.2537, lng: 75.7033 };
 
 const HOTSPOTS = [
-  { lat: 31.2555, lng: 75.7040, count: 9 },
-  { lat: 31.2490, lng: 75.7100, count: 7 },
-  { lat: 31.2600, lng: 75.6990, count: 6 },
+  { lat: 31.2555, lng: 75.704, count: 9 },
+  { lat: 31.249, lng: 75.71, count: 7 },
+  { lat: 31.26, lng: 75.699, count: 6 },
 ];
 
 const TAG_POOL = ["trapped", "injured", "medical", "water", "shelter", "fire", "elderly", "child"];
@@ -37,14 +38,29 @@ const NOTE_POOL = [
   "Pregnant, contractions started",
   "Structural crack, building unsafe",
 ];
-const DEVICES = ["amar-7f3a", "priya-2c81", "roshan-91de", "fatima-44a2", "gurpreet-6b19", "meera-e057"];
+const DEVICES = [
+  "amar-7f3a",
+  "priya-2c81",
+  "roshan-91de",
+  "fatima-44a2",
+  "gurpreet-6b19",
+  "meera-e057",
+];
 
 function mkSos(lat: number, lng: number, i: number) {
   const sevRoll = rand();
-  const severity = sevRoll < 0.3 ? "critical" : sevRoll < 0.6 ? "high" : sevRoll < 0.85 ? "medium" : "low";
+  const severity =
+    sevRoll < 0.3 ? "critical" : sevRoll < 0.6 ? "high" : sevRoll < 0.85 ? "medium" : "low";
   const tags = [...new Set([pick(TAG_POOL), pick(TAG_POOL)])];
   const statusRoll = rand();
-  const status = statusRoll < 0.55 ? "open" : statusRoll < 0.75 ? "acknowledged" : statusRoll < 0.9 ? "dispatched" : "rescued";
+  const status =
+    statusRoll < 0.55
+      ? "open"
+      : statusRoll < 0.75
+        ? "acknowledged"
+        : statusRoll < 0.9
+          ? "dispatched"
+          : "rescued";
   return {
     id: `seed-sos-${i}`,
     kind: "emergency" as const,
@@ -91,20 +107,21 @@ function mkHelp(i: number) {
 const sosList: Array<ReturnType<typeof mkSos> | ReturnType<typeof mkHelp>> = [];
 let i = 0;
 for (const h of HOTSPOTS) for (let k = 0; k < h.count; k++) sosList.push(mkSos(h.lat, h.lng, i++));
-for (let k = 0; k < 14; k++) sosList.push(mkSos(jitter(CENTRE.lat, 0.03), jitter(CENTRE.lng, 0.03), i++));
+for (let k = 0; k < 14; k++)
+  sosList.push(mkSos(jitter(CENTRE.lat, 0.03), jitter(CENTRE.lng, 0.03), i++));
 for (let k = 0; k < 12; k++) sosList.push(mkHelp(i++));
 
 const hazardList = [
-  { kind: "flood", lat: 31.2520, lng: 75.7065, note: "Drain overflow, street waist-deep" },
-  { kind: "flood", lat: 31.2505, lng: 75.7090, note: "Underpass fully submerged" },
-  { kind: "flood", lat: 31.2570, lng: 75.7010, note: "River bank seeping onto road" },
-  { kind: "fire", lat: 31.2540, lng: 75.7025, note: "LPG cylinder leak, smoke visible" },
-  { kind: "fire", lat: 31.2610, lng: 75.7005, note: "Transformer fire, live wires down" },
+  { kind: "flood", lat: 31.252, lng: 75.7065, note: "Drain overflow, street waist-deep" },
+  { kind: "flood", lat: 31.2505, lng: 75.709, note: "Underpass fully submerged" },
+  { kind: "flood", lat: 31.257, lng: 75.701, note: "River bank seeping onto road" },
+  { kind: "fire", lat: 31.254, lng: 75.7025, note: "LPG cylinder leak, smoke visible" },
+  { kind: "fire", lat: 31.261, lng: 75.7005, note: "Transformer fire, live wires down" },
   { kind: "rubble", lat: 31.2558, lng: 75.7045, note: "Building facade collapsed on road" },
   { kind: "rubble", lat: 31.2495, lng: 75.7095, note: "Debris blocking main exit" },
   { kind: "rubble", lat: 31.2598, lng: 75.6998, note: "Fallen tree + power pole" },
-  { kind: "other", lat: 31.2510, lng: 75.7000, note: "Bridge closed, cracks visible" },
-  { kind: "other", lat: 31.2620, lng: 75.7040, note: "Gas smell in alley" },
+  { kind: "other", lat: 31.251, lng: 75.7, note: "Bridge closed, cracks visible" },
+  { kind: "other", lat: 31.262, lng: 75.704, note: "Gas smell in alley" },
 ].map((h, j) => ({
   id: `seed-hz-${j}`,
   ...h,
@@ -120,7 +137,18 @@ for (const s of sosList) {
   await pool.query(
     `INSERT INTO sos_reports (id, kind, lat, lng, severity, tags, note, origin_device, status, created_at, updated_at)
      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9, now() - ($10 || ' minutes')::interval, now() - ($10 || ' minutes')::interval)`,
-    [s.id, s.kind, s.lat, s.lng, s.severity, s.tags, s.note, s.origin_device, s.status, s.minutesAgo],
+    [
+      s.id,
+      s.kind,
+      s.lat,
+      s.lng,
+      s.severity,
+      s.tags,
+      s.note,
+      s.origin_device,
+      s.status,
+      s.minutesAgo,
+    ],
   );
 }
 
@@ -139,15 +167,46 @@ await pool.query(
 );
 
 const shelters = [
-  { name: "Government Senior Sec. School, Phagwara", capacity: 320, lat: 31.2562, lng: 75.7008, contact: "Block officer · 98765 00001" },
-  { name: "Community Centre — Model Town", capacity: 150, lat: 31.2501, lng: 75.7062, contact: "Ward office · 98765 00002" },
-  { name: "Gurudwara Langar Hall", capacity: 500, lat: 31.2596, lng: 75.7041, contact: "Volunteer desk · 98765 00003" },
-  { name: "LPU Campus Relief Point (Gate 2)", capacity: 800, lat: 31.2532, lng: 75.7022, contact: "Campus control · 98765 00004" },
+  {
+    name: "Government Senior Sec. School, Phagwara",
+    capacity: 320,
+    lat: 31.2562,
+    lng: 75.7008,
+    contact: "Block officer · 98765 00001",
+  },
+  {
+    name: "Community Centre — Model Town",
+    capacity: 150,
+    lat: 31.2501,
+    lng: 75.7062,
+    contact: "Ward office · 98765 00002",
+  },
+  {
+    name: "Gurudwara Langar Hall",
+    capacity: 500,
+    lat: 31.2596,
+    lng: 75.7041,
+    contact: "Volunteer desk · 98765 00003",
+  },
+  {
+    name: "LPU Campus Relief Point (Gate 2)",
+    capacity: 800,
+    lat: 31.2532,
+    lng: 75.7022,
+    contact: "Campus control · 98765 00004",
+  },
 ];
 for (const s of shelters) {
   await pool.query(
     `INSERT INTO shelters (id, name, capacity, lat, lng, contact) VALUES ($1,$2,$3,$4,$5,$6)`,
-    [`seed-shelter-${s.name.slice(0, 12).replace(/\W/g, "")}`, s.name, s.capacity, s.lat, s.lng, s.contact],
+    [
+      `seed-shelter-${s.name.slice(0, 12).replace(/\W/g, "")}`,
+      s.name,
+      s.capacity,
+      s.lat,
+      s.lng,
+      s.contact,
+    ],
   );
 }
 
@@ -156,6 +215,23 @@ await pool.query(
    ('priya-2c81', 'priya', 31.2505, 75.7092, now() - interval '22 minutes'),
    ('gurpreet-6b19', 'gurpreet', 31.2588, 75.7019, now() - interval '40 minutes')`,
 );
+
+const demoPassword = process.env.BEACON_DEMO_PASSWORD ?? "demo-only-password";
+const passwordHash = await bcrypt.hash(demoPassword, 12);
+for (const [username, role] of [
+  ["admin", "admin"],
+  ["dispatcher", "dispatcher"],
+  ["viewer", "viewer"],
+] as const) {
+  await pool.query(
+    `INSERT INTO responder_users (username, password_hash, role)
+     VALUES ($1,$2,$3)
+     ON CONFLICT (username) DO UPDATE
+     SET password_hash=EXCLUDED.password_hash, role=EXCLUDED.role,
+         disabled=false, failed_attempts=0, locked_until=NULL`,
+    [username, passwordHash, role],
+  );
+}
 
 console.log(
   `[seed] ${sosList.length} SOS, ${hazardList.length} hazards, ${shelters.length} shelters, 2 check-ins inserted`,

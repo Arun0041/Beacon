@@ -38,13 +38,11 @@ type Props = {
 const TILES = {
   light: {
     url: "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}",
-    attr:
-      'Tiles &copy; Esri — Esri, DeLorme, NAVTEQ · Data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    attr: 'Tiles &copy; Esri — Esri, DeLorme, NAVTEQ · Data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
   },
   dark: {
     url: "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}",
-    attr:
-      'Tiles &copy; Esri — Esri, DeLorme, NAVTEQ · Data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    attr: 'Tiles &copy; Esri — Esri, DeLorme, NAVTEQ · Data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
   },
 };
 
@@ -89,7 +87,6 @@ export default function MapCanvas({
       meMarker.current = null;
       meCircle.current = null;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -143,7 +140,11 @@ export default function MapCanvas({
     const pos: L.LatLngExpression = [myLoc.lat, myLoc.lng];
     if (!meMarker.current) {
       meMarker.current = L.marker(pos, {
-        icon: L.divIcon({ className: "mk-wrap", html: `<div class="mk-me"></div>`, iconSize: [16, 16] }),
+        icon: L.divIcon({
+          className: "mk-wrap",
+          html: `<div class="mk-me"></div>`,
+          iconSize: [16, 16],
+        }),
         interactive: false,
         zIndexOffset: 500,
       }).addTo(map);
