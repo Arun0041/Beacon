@@ -26,6 +26,7 @@ export default [
           "./client/tsconfig.json",
           "./server/tsconfig.json",
           "./packages/shared/tsconfig.json",
+          "./packages/crypto/tsconfig.json",
         ],
         tsconfigRootDir: process.cwd(),
       },
